@@ -26,16 +26,34 @@ services:
       - POSTGRES_PASSWORD=123qweASD
     ports:
       - 5432:5432
+  
+  celery_worker:
+    build: .
+    image: online_store:celery
+    container_name: celery_worker
+    restart: on-failure
+    command: celery -A myshop worker --loglevel=info
+    volumes:
+      - "./myshop/:/myshop/"
+    env_file:
+      - env.container
 
-  # celery:
-  #   build: .
-  #   container_name: celery
-  #   restart: on-failure
-  #   command: celery -A myapp worker --loglevel=info
-  #   volumes:
-  #     - "./myshop/:/myshop/"
-  #   env_file:
-  #     - env.container
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    port:
+      - 5672:5672
+      - 15672:15672
+
+  flower:
+    build: .
+    image: online_store:flower
+    container_name: flower
+    restart: always
+    command: flower --broker=pyamqp://guest:guest@rabbitmq:5672/
+    ports:
+      - 5555:5555
 
 volumes:
   postgresql_data:

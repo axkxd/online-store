@@ -23,6 +23,10 @@ DJANGO_POSTGRES_BASE = os.environ["DJANGO_POSTGRES_BASE"]
 DJANGO_POSTGRES_USER = os.environ["DJANGO_POSTGRES_USER"]
 DJANGO_POSTGRES_PASS = os.environ["DJANGO_POSTGRES_PASS"]
 
+# RabbitMQ params
+RABBITMQ_HOST = os.environ["RABBITMQ_HOST"]
+RABBITMQ_PORT = os.environ["RABBITMQ_PORT"]
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -126,6 +130,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+CELERY_BROKER_URL = f"amqp://guest:guest@{os.environ['RABBITMQ_HOST']}:{os.environ['RABBITMQ_PORT']}/"
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

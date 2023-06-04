@@ -28,5 +28,5 @@ Django, PostgreSQL, Docker, RabbitMQ, Celery
     ```
 * Создание суперпользователя
     ```
-    docker exec -it myadmin python manage.py createsuperuser
+    docker exec -it myshop python manage.py createsuperuser
     ```

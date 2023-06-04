@@ -27,6 +27,14 @@ services:
     ports:
       - 5432:5432
   
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - 5672:5672
+      - 15672:15672
+
   celery_worker:
     build: .
     image: online_store:celery
@@ -37,21 +45,15 @@ services:
       - "./myshop/:/myshop/"
     env_file:
       - env.container
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
-    restart: always
-    port:
-      - 5672:5672
-      - 15672:15672
-
+      
   flower:
     build: .
     image: online_store:flower
     container_name: flower
     restart: always
-    command: flower --broker=pyamqp://guest:guest@rabbitmq:5672/
+    command: celery -A myshop flower
+    env_file:
+      - env.container
     ports:
       - 5555:5555
 

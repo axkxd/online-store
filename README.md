@@ -15,3 +15,18 @@ Django, PostgreSQL, Docker, RabbitMQ, Celery
 * Создание системы корзины для покупок с помощью сессий Django, чтобы пользователи могли сохранять выбранные продукты при просмотре сайта.
 * Создание форм и функциональных возможностей для размещения заказов.
 * Создание асинхронных задач для отправки писем по email пользователям при размещении заказа. Использование Django с Celery и RabbitMQ.
+
+### Инструкция по развертыванию проекта
+
+* Инициализационный запуск docker-compose  
+    ```
+    docker-compose up -d --build
+    ```
+* Запуск миграций  
+    ```
+    docker exec -it myshop python manage.py migrate
+    ```
+* Создание суперпользователя
+    ```
+    docker exec -it myadmin python manage.py createsuperuser
+    ```

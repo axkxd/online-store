@@ -46,14 +46,16 @@ services:
     env_file:
       - env.container
       
-  # flower:
-  #   build: .
-  #   image: online_store:flower
-  #   container_name: flower
-  #   restart: always
-  #   command: celery -A myshop flower
-  #   ports:
-  #     - 5555:5555
+  flower:
+    build: .
+    image: online_store:flower
+    container_name: flower
+    restart: always
+    command: celery -A myshop flower
+    env_file:
+      - env.container
+    ports:
+      - 5555:5555
 
 volumes:
   postgresql_data:

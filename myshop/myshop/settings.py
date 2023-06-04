@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 
 # Getting environment
-SECRET_KEY = os.environ["SECRET_KEY"]
+SECRET_KEY = os.environ.get("SECRET_KEY", "")
 DEBUG_VAR = os.environ.get("DEBUG", "False")
 
 # Django-Postgres params
@@ -132,6 +132,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 CELERY_BROKER_URL = f"amqp://guest:guest@{os.environ['RABBITMQ_HOST']}:{os.environ['RABBITMQ_PORT']}/"
+# CELERY_RESULT_BACKEND = "django-db"
+# CELERY_CACHE_BACKEND = "django-cache"
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

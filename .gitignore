@@ -10,6 +10,7 @@ __pycache__/
 users_data.txt
 .vscode
 stripe
+env.container.dev
 
 # Distribution / packaging
 .Python

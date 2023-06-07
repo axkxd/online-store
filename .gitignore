@@ -9,6 +9,7 @@ __pycache__/
 # users data filr
 users_data.txt
 .vscode
+stripe
 
 # Distribution / packaging
 .Python

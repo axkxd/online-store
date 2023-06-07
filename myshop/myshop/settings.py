@@ -16,16 +16,23 @@ from pathlib import Path
 SECRET_KEY = os.environ.get("SECRET_KEY", "")
 DEBUG_VAR = os.environ.get("DEBUG", "False")
 
-# Django-Postgres params
+# Django-Postgres settings
 DJANGO_POSTGRES_HOST = os.environ["DJANGO_POSTGRES_HOST"]
 DJANGO_POSTGRES_PORT = os.environ["DJANGO_POSTGRES_PORT"]
 DJANGO_POSTGRES_BASE = os.environ["DJANGO_POSTGRES_BASE"]
 DJANGO_POSTGRES_USER = os.environ["DJANGO_POSTGRES_USER"]
 DJANGO_POSTGRES_PASS = os.environ["DJANGO_POSTGRES_PASS"]
 
-# RabbitMQ params
+# RabbitMQ settings
 RABBITMQ_HOST = os.environ["RABBITMQ_HOST"]
 RABBITMQ_PORT = os.environ["RABBITMQ_PORT"]
+
+# Stripe settings
+STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "")
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
+STRIPE_API_VERSION = os.environ.get("STRIPE_API_VERSION", "")
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -56,6 +63,7 @@ INSTALLED_APPS = [
     'shop.apps.ShopConfig',
     'cart.apps.CartConfig',
     'orders.apps.OrdersConfig',
+    'payment.apps.PaymentConfig',
 ]
 
 MIDDLEWARE = [

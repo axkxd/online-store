@@ -57,5 +57,16 @@ services:
     ports:
       - 5555:5555
 
+  stripe-cli:
+    image: stripe/stripe-cli
+    restart: on-failure
+    volumes:
+      - ./stripe:/root/.config/stripe
+    environment:
+      - STRIPE_CLI_API_KEY=rk_test_51NFX7cEVNNhijjILmgR8UY3HWCC0sLPfM1iw9XlLIwGiR37pGygVKu8KDyEfCUUsqkI04MNMJUr0X6j2hJxfaYGo00m6fT5CT0
+    command: ["listen", "--forward-to", "localhost:8065/payment/webhook/"]
+    depends_on:
+      - online_store
+
 volumes:
   postgresql_data:

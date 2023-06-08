@@ -11,6 +11,7 @@ users_data.txt
 .vscode
 stripe
 env.container.dev
+media
 
 # Distribution / packaging
 .Python

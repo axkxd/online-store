@@ -6,16 +6,16 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Ваша корзина</h1>
+    <h1>Your shopping cart</h1>
     <table class="cart">
         <thead>
             <tr>
-                <th>Изображение</th>
-                <th>Наименование</th>
-                <th>Кол-во</th>
-                <th>Удалить</th>
-                <th>Цена за шт.</th>
-                <th>Цена</th>
+                <th>Image</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Remove</th>
+                <th>Unit price</th>
+                <th>Price</th>
             </tr>
         </thead>
         <tbody>
@@ -55,7 +55,7 @@
         </tbody>
     </table>
     <p class="text-right">
-        <a href="{% url 'shop:product_list' %}" class="button light">Продолжить покупки</a>
-        <a href="{% url 'orders:order_create' %}" class="button">Подтвердить</a>
+        <a href="{% url 'shop:product_list' %}" class="button light">Continue shopping</a>
+        <a href="{% url 'orders:order_create' %}" class="button">Checkout</a>
     </p>
 {% endblock %}

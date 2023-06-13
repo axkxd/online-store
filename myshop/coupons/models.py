@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import MinLengthValidator, MaxValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Coupon(models.Model):
@@ -7,7 +7,7 @@ class Coupon(models.Model):
     valid_form = models.DateTimeField()
     valid_to = models.DateTimeField()
     discount = models.IntegerField(
-                    validators=[MinLengthValidator(0),
+                    validators=[MinValueValidator(0),
                                 MaxValueValidator(100)],
                     help_text='Percentage value (0 to 100)')
     active = models.BooleanField()

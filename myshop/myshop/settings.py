@@ -27,6 +27,11 @@ DJANGO_POSTGRES_PASS = os.environ["DJANGO_POSTGRES_PASS"]
 RABBITMQ_HOST = os.environ["RABBITMQ_HOST"]
 RABBITMQ_PORT = os.environ["RABBITMQ_PORT"]
 
+# Redis settings
+REDIS_HOST = os.environ["REDIS_HOST"]
+REDIS_PORT = os.environ["REDIS_PORT"]
+REDIS_DB = os.environ["REDIS_DB"]
+
 # Stripe settings
 STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "")
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")

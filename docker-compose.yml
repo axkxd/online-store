@@ -15,9 +15,14 @@ services:
       - env.container
 
   redis:
-    image: redis
+    image: redis:6.2-alpine
     container_name: redis_coupons
     restart: always
+    ports:
+      - 6379:6379
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - redis:/data
 
   postgresql:
     image: postgres:latest
@@ -75,3 +80,4 @@ services:
 
 volumes:
   postgresql_data:
+  redis:

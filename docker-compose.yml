@@ -1,46 +1,51 @@
-version: "3"
+version: "3.7"
 
 services:
+  postgresql:
+    image: postgres:15.3
+    container_name: postgresql
+    restart: on-failure
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=${DJANGO_POSTGRES_BASE}
+      - POSTGRES_USER=${DJANGO_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${DJANGO_POSTGRES_PASS}
+    ports:
+      - ${DJANGO_POSTGRES_PORT}:${DJANGO_POSTGRES_PORT}
+
   online_store:
-    build: .
     image: online_store:a1
     container_name: online_store
     restart: on-failure
-    command: python manage.py runserver 0.0.0.0:8065
-    volumes:
-      - "./myshop/:/myshop/"
+    depends_on:
+      - postgresql
     ports:
-      - 8065:8065
+      - 8088:8088
+    volumes:
+      - static_volume:/myshop/static
+      - media_volume:/mushop/media
     env_file:
-      - env.container
+      - .env
+    command: >
+      bash -c "./manage.py collectstatic --noinput && ./manage.py migrate && gunicorn -b 0.0.0.0:8088 myshop.wsgi:application"
 
   redis:
-    image: redis:6.2-alpine
+    image: redis:7.0.11
     container_name: redis_coupons
-    restart: always
+    restart: on-failure
     ports:
       - 6379:6379
     command: redis-server --save 20 1 --loglevel warning
     volumes:
       - redis:/data
-
-  postgresql:
-    image: postgres:latest
-    container_name: postgresql
-    restart: always
-    volumes:
-      - postgresql_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=db_myshop
-      - POSTGRES_USER=axkxd
-      - POSTGRES_PASSWORD=123qweASD
-    ports:
-      - 5432:5432
   
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:3.12.0-management
     container_name: rabbitmq
-    restart: always
+    restart: on-failure
     ports:
       - 5672:5672
       - 15672:15672
@@ -51,33 +56,52 @@ services:
     container_name: celery_worker
     restart: on-failure
     command: celery -A myshop worker --loglevel=info
-    volumes:
-      - "./myshop/:/myshop/"
     env_file:
-      - env.container
+      - .env
+    depends_on:
+      - rabbitmq
       
   flower:
     build: .
     image: online_store:flower
     container_name: flower
-    restart: always
+    restart: on-failure
     command: celery -A myshop flower
     env_file:
-      - env.container
+      - .env
     ports:
       - 5555:5555
+    depends_on:
+      - rabbitmq
 
   stripe-cli:
     image: stripe/stripe-cli
+    container_name: stripe
     restart: on-failure
     volumes:
       - ./stripe:/root/.config/stripe
     environment:
       - STRIPE_CLI_API_KEY=rk_test_51NFX7cEVNNhijjILmgR8UY3HWCC0sLPfM1iw9XlLIwGiR37pGygVKu8KDyEfCUUsqkI04MNMJUr0X6j2hJxfaYGo00m6fT5CT0
-    command: ["listen", "--forward-to", "localhost:8065/payment/webhook/"]
+    command: ["listen", "--forward-to", "localhost:8088/payment/webhook/"]
     depends_on:
       - online_store
+
+  nginx_os:
+    build: 
+      dockerfile: ./Dockerfile
+      context: ./docker/nginx
+    container_name: nginx_os
+    image: nginx_os
+    volumes:
+      - static_volume:/myshop/static
+      - media_volume:/mushop/media
+    depends_on:
+      - online_store
+    ports:
+      - 80:80
 
 volumes:
   postgresql_data:
   redis:
+  static_volume:
+  media_volume:

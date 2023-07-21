@@ -1,0 +1,94 @@
+version: "3.8"
+
+services:
+  online_store:
+    image: online_store
+    container_name: online_store
+    restart: on-failure
+    ports:
+      - 8088:8088
+    volumes:
+      - static_volume:/online-store/myshop/static
+      - media_volume:/online-store/myshop/media
+    env_file:
+      - .env
+    command: bash -c "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn -b 0.0.0.0:8088 --log-level=debug myshop.wsgi:application"
+
+  redis:
+    image: redis:7.0.11
+    container_name: redis_coupons
+    restart: on-failure
+    depends_on:
+      - online_store
+    ports:
+      - 6379:6379
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - redis:/data
+  
+  rabbitmq:
+    image: rabbitmq:3.12.0-management
+    container_name: rabbitmq
+    restart: on-failure
+    depends_on:
+      - online_store
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  celery_worker:
+    build: .
+    image: online_store:celery
+    container_name: celery_worker
+    restart: on-failure
+    command: celery -A myshop worker --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      - rabbitmq
+      
+  flower:
+    build: .
+    image: online_store:flower
+    container_name: flower
+    restart: on-failure
+    command: celery -A myshop flower
+    env_file:
+      - .env
+    ports:
+      - 5555:5555
+    depends_on:
+      - rabbitmq
+
+  stripe-cli:
+    image: stripe/stripe-cli
+    container_name: stripe
+    restart: on-failure
+    volumes:
+      - ./stripe:/root/.config/stripe
+    environment:
+      - STRIPE_CLI_API_KEY=rk_test_51NFX7cEVNNhijjILmgR8UY3HWCC0sLPfM1iw9XlLIwGiR37pGygVKu8KDyEfCUUsqkI04MNMJUr0X6j2hJxfaYGo00m6fT5CT0
+    command: ["listen", "--forward-to", "185.246.118.170:8088/payment/webhook/"]
+    depends_on:
+      - online_store
+
+  nginx_os:
+    build: 
+      dockerfile: ./Dockerfile
+      context: ./docker/nginx
+    container_name: nginx_os
+    image: nginx_os
+    restart: always
+    volumes:
+      - static_volume:/online-store/myshop/static
+      - media_volume:/online-store/myshop/media
+    depends_on:
+      - online_store
+    ports:
+      - 9595:9595
+
+volumes:
+
+  redis:
+  static_volume:
+  media_volume:

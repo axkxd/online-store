@@ -11,7 +11,7 @@ users_data.txt
 .vscode
 stripe
 env.container.dev
-media
+env_block.txt
 stripe
 
 # Distribution / packaging

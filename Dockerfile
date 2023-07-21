@@ -14,4 +14,4 @@ WORKDIR /online-store/myshop
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-CMD [ "gunicorn", "-b", "0.0.0.0:8088", "myshop.wsgi:application" ]
+CMD [ "gunicorn", "-b", "0.0.0.0:8099", "myshop.wsgi:application" ]

@@ -1,56 +1,57 @@
 version: "3.8"
 
 services:
-  online_store:
-    image: online_store
-    container_name: online_store
+  online_store_test:
+    build: .
+    image: online_store_test
+    container_name: online_store_test
     restart: on-failure
     ports:
-      - 8088:8088
+      - 8099:8099
     volumes:
       - static_volume:/online-store/myshop/static
       - media_volume:/online-store/myshop/media
     env_file:
       - .env
-    command: bash -c "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn -b 0.0.0.0:8088 --log-level=debug myshop.wsgi:application"
+    command: bash -c "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn -b 0.0.0.0:8099 --log-level=debug myshop.wsgi:application"
 
-  redis:
+  redis_test:
     image: redis:7.0.11
-    container_name: redis_coupons
+    container_name: redis_test
     restart: on-failure
     depends_on:
-      - online_store
+      - online_store_test
     ports:
       - 6379:6379
     command: redis-server --save 20 1 --loglevel warning
     volumes:
       - redis:/data
   
-  rabbitmq:
+  rabbitmq_test:
     image: rabbitmq:3.12.0-management
-    container_name: rabbitmq
+    container_name: rabbitmq_test
     restart: on-failure
     depends_on:
-      - online_store
+      - online_store_test
     ports:
       - 5672:5672
       - 15672:15672
 
-  celery_worker:
+  celery_worker_test:
     build: .
-    image: online_store:celery
-    container_name: celery_worker
+    image: online_store_test:celery
+    container_name: celery_worker_test
     restart: on-failure
     command: celery -A myshop worker --loglevel=info
     env_file:
       - .env
     depends_on:
-      - rabbitmq
+      - rabbitmq_test
       
-  flower:
+  flower_test:
     build: .
-    image: online_store:flower
-    container_name: flower
+    image: online_store_test:flower
+    container_name: flower_test
     restart: on-failure
     command: celery -A myshop flower
     env_file:
@@ -58,34 +59,34 @@ services:
     ports:
       - 5555:5555
     depends_on:
-      - rabbitmq
+      - rabbitmq_test
 
-  stripe-cli:
+  stripe_cli_test:
     image: stripe/stripe-cli
-    container_name: stripe
+    container_name: stripe_cli_test
     restart: on-failure
     volumes:
       - ./stripe:/root/.config/stripe
     environment:
       - STRIPE_CLI_API_KEY=rk_test_51NFX7cEVNNhijjILmgR8UY3HWCC0sLPfM1iw9XlLIwGiR37pGygVKu8KDyEfCUUsqkI04MNMJUr0X6j2hJxfaYGo00m6fT5CT0
-    command: ["listen", "--forward-to", "185.246.118.170:8088/payment/webhook/"]
+    command: ["listen", "--forward-to", "185.246.118.170:8099/payment/webhook/"]
     depends_on:
-      - online_store
+      - online_store_test
 
-  nginx_os:
+  nginx_test:
     build: 
       dockerfile: ./Dockerfile
       context: ./docker/nginx
-    container_name: nginx_os
-    image: nginx_os
+    container_name: nginx_test
+    image: nginx_test
     restart: always
     volumes:
       - static_volume:/online-store/myshop/static
       - media_volume:/online-store/myshop/media
     depends_on:
-      - online_store
+      - online_store_test
     ports:
-      - 9595:9595
+      - 9777:9777
 
 volumes:
 
